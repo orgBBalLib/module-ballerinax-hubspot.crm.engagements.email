@@ -1,200 +1,106 @@
 ## Overview
 
-[HubSpot](https://www.hubspot.com) is an AI-powered customer relationship management (CRM) platform. 
+[HubSpot](https://www.hubspot.com/) is a cloud-based customer relationship management (CRM) platform that helps businesses grow by providing tools for marketing, sales, customer service, and content management, all powered by a unified customer database.
 
-The HubSpot connector offers APIs to connect and interact with the [HubSpot CRM Engagements Email API](https://developers.hubspot.com/docs/reference/api/crm/engagements/email) endpoints, specifically based on the [HubSpot REST API](https://developers.hubspot.com/docs/reference/api/overview).
-
-### Key Features
-
-- Create, read, update, and delete email engagement records
-- Batch operations for bulk email management
-- Search emails with filtering support
-- Track email interactions with CRM contacts
-
+The `ballerinax/hubspot.crm.engagements.email` package offers APIs to connect and interact with [HubSpot CRM Engagements Emails API](https://developers.hubspot.com/docs/api/crm/email) endpoints, specifically based on [HubSpot CRM API v3](https://developers.hubspot.com/docs/api/crm/email).
 ## Setup guide
 
-To use the HubSpot CRM Engagements Email connector, you must have access to the HubSpot API through a HubSpot developer account and a HubSpot App under it. Therefore you need to register for a developer account at HubSpot if you don't have one already.
+To use the HubSpot CRM Engagements Email connector, you must have access to the HubSpot API through a [HubSpot developer account](https://developers.hubspot.com/) and obtain an API access token. If you do not have a HubSpot account, you can sign up for one [here](https://app.hubspot.com/signup-hubspot/crm).
 
-### Step 1: Create/Login to a HubSpot developer account
+### Step 1: Create a HubSpot Account
 
-If you have an account already, go to the [HubSpot developer portal](https://app.hubspot.com/)
+1. Navigate to the [HubSpot website](https://www.hubspot.com/) and sign up for an account or log in if you already have one.
 
-If you don't have a HubSpot Developer Account you can sign up to a free account [here](https://developers.hubspot.com/get-started)
+2. If you intend to use API keys, note that HubSpot API keys are only available on accounts with a Marketing Hub, Sales Hub, Content Hub, Operations Hub, or Service Hub Professional or Enterprise plan. For development and testing purposes, you can create a [HubSpot developer account](https://developers.hubspot.com/get-started) which provides access to test portals.
 
-### Step 2: Create a developer test account (Optional)
+### Step 2: Generate an API Access Token
 
-Within app developer accounts, you can create a [developer test account](https://developers.hubspot.com/beta-docs/getting-started/account-types#developer-test-accounts) under your account to test apps and integrations without affecting any real HubSpot data.
+HubSpot recommends using Private Apps to generate access tokens for API authentication.
 
-> **Note:** These accounts are only for development and testing purposes. In production you should not use developer test accounts.
+1. Log in to your HubSpot account.
 
-1. Go to `Test Account` section from the left sidebar.
+2. In the main navigation bar, click the **Settings** icon (gear icon) in the top right corner.
 
-   ![Hubspot Developer Portal](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/test_acc_1.png) 
+3. In the left sidebar menu, navigate to **Integrations** > **Private Apps**.
 
-2. Click Create developer test account.
+4. Click **Create a private app**.
 
-   ![Hubspot Developer Test Account](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/test_acc_2.png)
+5. On the **Basic Info** tab, enter a name and description for your app.
 
-3. In the dialogue box, give a name to your test account and click create.
+6. Navigate to the **Scopes** tab and select the required scopes for the CRM Engagements Email API, including `crm.objects.contacts.read`, `crm.objects.contacts.write`, `sales-email-read`, and other relevant engagement scopes.
 
-   ![Hubspot Developer Test Account](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/test_acc_3.png)
+7. Click **Create app** in the top right corner, then review the information and click **Continue creating**.
 
-### Step 3: Create a HubSpot app
+8. Once the private app is created, your access token will be displayed. Click **Show token** to reveal and copy it.
 
-1. In your developer account, navigate to the "Apps" section. Click on "Create App"
-
-   ![Hubspot Create App](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/create_app_1.png)
-
-2. Provide the necessary details, including the app name and description.
-
-### Step 4: Configure the authentication flow.
-
-1. Move to the `Auth` Tab. (Second tab next to App Info)
-
-   ![Hubspot Developer Config Auth](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/create_app_2.png )
-
-2. In the `Scopes` section, add the following scope for your app using the "Add new scope" button.
-
-   * `crm.objects.contacts.read`
-   * `crm.objects.contacts.write`
-   * `sales-email-read`
-
-   ![Hubspot Developer App Add Scopes](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/scopes.png )
-
-4. Add your Redirect URI in the relevant section. You can also use `localhost` addresses for local development purposes. Click Create App.
-
-   ![Hubspot Create Developer App](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/create_app_final.png )
-
-### Step 5: Get your client id and client secret
-
-- Navigate to the Auth section of your app. Make sure to save the provided Client ID and Client Secret.
-
-   ![Hubspot Get Credentials](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/get_credentials.png )
-
-### Step 6: Setup authentication flow
-
-Before proceeding with the Quickstart, ensure you have obtained the Access Token using the following steps:
-
-1. Create an authorization URL using the following format:
-
-   ```
-   https://app.hubspot.com/oauth/authorize?client_id=<YOUR_CLIENT_ID>&scope=<YOUR_SCOPES>&redirect_uri=<YOUR_REDIRECT_URI>
-   ```
-
-   Replace the `<YOUR_CLIENT_ID>`, `<YOUR_REDIRECT_URI>` and `<YOUR_SCOPES>` with your specific value.
-
-> **Note:** If you are using a `localhost` redirect url, make sure to have a listener running at the relevant port before executing the next step.
-
-2. Paste it in the browser and select your developer test account to install the app when prompted.
-
-   ![Hubspot Get Auth Code](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/main/docs/resources/install_app.png)
-
-3. A code will be displayed in the browser. Copy the code.
-
-4. Run the following curl command. Replace the `<YOUR_CLIENT_ID>`, `<YOUR_REDIRECT_URI>` and `<YOUR_CLIENT_SECRET>` with your specific value. Use the code you received in the above step 3 as the `<CODE>`.
-
-   - Linux/macOS
-
-     ```bash
-     curl --request POST \
-     --url https://api.hubapi.com/oauth/v1/token \
-     --header 'content-type: application/x-www-form-urlencoded' \
-     --data 'grant_type=authorization_code&code=<CODE>&redirect_uri=<YOUR_REDIRECT_URI>&client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET>'
-     ```
-
-   - Windows
-
-     ```bash
-     curl --request POST ^
-     --url https://api.hubapi.com/oauth/v1/token ^
-     --header 'content-type: application/x-www-form-urlencoded' ^
-     --data 'grant_type=authorization_code&code=<CODE>&redirect_uri=<YOUR_REDIRECT_URI>&client_id=<YOUR_CLIENT_ID>&client_secret=<YOUR_CLIENT_SECRET>'
-     ```
-
-   This command will return the access token necessary for API calls.
-
-   ```json
-   {
-     "token_type": "bearer",
-     "refresh_token": "<Refresh Token>",
-     "access_token": "<Access Token>",
-     "expires_in": 1800
-   }
-   ```
-
-5. Store the access token securely for use in your application.
-
+> **Tip:** You must copy and store this key somewhere safe. It won't be visible again after you navigate away from the page for security reasons.
 ## Quickstart
 
 To use the `HubSpot CRM Engagements Email` connector in your Ballerina application, update the `.bal` file as follows:
 
 ### Step 1: Import the module
 
-Import the `hubspot.crm.engagements.email` module and `oauth2` module.
-
 ```ballerina
-import ballerina/oauth2;
-import ballerinax/hubspot.crm.engagements.email as hsceemail;
+import ballerinax/hubspot.crm.engagements.email as hsemail;
 ```
 
 ### Step 2: Instantiate a new connector
 
-1. Create a `Config.toml` file and, configure the obtained credentials in the above steps as follows:
+1. Create a `Config.toml` file and configure the obtained credentials:
 
-   ```toml
-    clientId = <Client Id>
-    clientSecret = <Client Secret>
-    refreshToken = <Refresh Token>
-   ```
+```toml
+clientId = "<Your_Client_Id>"
+clientSecret = "<Your_Client_Secret>"
+refreshToken = "<Your_Refresh_Token>"
+```
 
-2. Instantiate a `hsceemail:ConnectionConfig` with the obtained credentials and initialize the connector with it.
+2. Create a `hsemail:ConnectionConfig` and initialize the client:
 
-    ```ballerina 
-    configurable string clientId = ?;
-    configurable string clientSecret = ?;
-    configurable string refreshToken = ?;
+```ballerina
+configurable string clientId = ?;
+configurable string clientSecret = ?;
+configurable string refreshToken = ?;
 
-    OAuth2RefreshTokenGrantConfig auth = {
-         clientId,
-         clientSecret,
-         refreshToken,
-         credentialBearer: oauth2:POST_BODY_BEARER
-    };
-
-    final hsceemail:Client hubspot = check new ({auth});
-    ```
+final hsemail:Client hsemailClient = check new ({
+    auth: {
+        clientId,
+        clientSecret,
+        refreshToken
+    }
+});
+```
 
 ### Step 3: Invoke the connector operation
 
-Now, utilize the available connector operations. A sample usecase is shown below.
+Now, utilize the available connector operations.
 
-#### Read a batch of emails by internal ID, or unique property values
-    
+#### Create a new email engagement
+
 ```ballerina
 public function main() returns error? {
-    hsceemail:BatchResponseSimplePublicObject|BatchResponseSimplePublicObjectWithErrors response = check hubspotClient->/batch/read.post({
-        propertiesWithHistory: [
-            "string"
-        ],
-        idProperty: "string",
-        inputs: [
-            {
-            id: testBatchId
-            }
-        ],
-        properties: [
-            "string"
-        ]
-    });
+    hsemail:SimplePublicObjectInputForCreate newEmail = {
+        associations: [],
+        properties: {
+            "hs_timestamp": "2024-01-15T10:30:00.000Z",
+            "hs_email_subject": "Follow-up on your inquiry",
+            "hs_email_text": "Thank you for reaching out. We would love to discuss further.",
+            "hs_email_direction": "EMAIL"
+        }
+    };
+
+    hsemail:SimplePublicObject response = check hsemailClient->/.post(newEmail);
 }
 ```
 
+### Step 4: Run the Ballerina application
+
+```bash
+bal run
+```
 ## Examples
 
-The `HubSpot CRM Engagements Email` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/), covering the following use cases:
+The `hubspot.crm.engagements.email` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples), covering the following use cases:
 
-1. [Bulk update sender information in scheduled emails](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/bulk_update_sender_info/) - Automate the process of updating sender information for all scheduled emails, ensuring accuracy and consistency in email communication.
-
-2. [Detect and resend failed emails](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/detect_resend_failed_emails/) - Identify emails with a status of "FAILED" or "BOUNCED" and attempt to resend them, ensuring important messages reach their intended recipients.
-
-3. [Email analytics and reporting](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/email_analytics_reporting/) - Retrieve and analyze key email performance metrics such as sent, bounced, failed, and scheduled emails to monitor delivery status and optimize communication strategies.
+1. [Bulk update sender info](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/bulk_update_sender_info) - Demonstrates how to update sender information across multiple email engagements in bulk.
+2. [Detect resend failed emails](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/detect_resend_failed_emails) - Illustrates how to identify and resend emails that previously failed to deliver.
+3. [Email analytics reporting](https://github.com/ballerina-platform/module-ballerinax-hubspot.crm.engagements.email/tree/main/examples/email_analytics_reporting) - Shows how to generate analytics reports from email engagement data.
